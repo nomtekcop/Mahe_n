@@ -186,24 +186,36 @@
 
        /* ==== 보드 레이아웃 (사각형 테두리로 1~21 칸 둘러싸기) ==== */
   #board-layout {
-    flex: 1;
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    column-gap: 14px;
-    align-items: center;
-  }
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  flex: 1; /* 가운데 보드가 세로 공간을 더 많이 차지하게 */
+}
+      
+/* 왼쪽 세로 (4,3,2) */
+#left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  /* 왼쪽 / 오른쪽 세로줄 */
-  #left-column,
-  #right-column {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-    height: 100%;
-  }
+#left-column .board-cell {
+  flex: 1;
+  min-height: 100px;  /* 🔥 세로 칸 길쭉하게 */
+}
 
+/* 오른쪽 세로 (13, 뗏목, 14,15) */
+#right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#right-column .board-cell {
+  flex: 1;
+  min-height: 100px;  /* 🔥 여기도 길쭉하게 */
+}
   /* 가운데 스택 (윗줄 / 중앙 / 아랫줄) */
   #center-stack {
     display: flex;
@@ -260,22 +272,30 @@
   }
 
   /* 21번 칸 – 점수 크게 */
-  #cell-pos-21 {
-    position: relative;
-    background: radial-gradient(circle at 20% 0%, #facc15, #b45309);
-    border-color: #fbbf24;
-    box-shadow: 0 0 14px rgba(250,204,21,0.9);
-    color: #111827;
-  }
-  #cell-pos-21 .board-cell-label {
-    font-weight: 800;
-    color: #1f2937;
-  }
-  #cell-pos-21 .cell-21-score {
-    font-size: 20px;
-    font-weight: 900;
-    margin-top: 4px;
-  }
+ #cell-pos-21 {
+  /* 21번 칸 – 넓게 + 점수 강조 */
+  position: relative;
+  background: radial-gradient(circle at 20% 0%, #facc15, #b45309);
+  border-color: #fbbf24;
+  box-shadow: 0 0 12px rgba(250,204,21,0.9);
+  color: #111827;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+#cell-pos-21 .board-cell-label {
+  font-weight: 800;
+  color: #1f2937;
+  font-size: 11px;
+  align-self: flex-start; /* 숫자 21은 왼쪽 위에 작게 */
+}
+#cell-pos-21 .cell-21-score {
+  font-size: 28px;
+  font-weight: 900;
+  margin-top: 6px;
+}
 
   /* 말이 도착할 칸 하이라이트 */
   .cell-highlight {
@@ -302,31 +322,36 @@
     gap: 8px;
   }
 
-  #start-controls {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 4px;
-  }
+#start-controls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
 
-  /* 게임 시작 버튼 – 좀 이쁘게 */
-  #start-game-btn {
-    padding: 6px 18px;
-    border-radius: 999px;
-    border: 1px solid #facc15;
-    background: linear-gradient(135deg, #581c87, #a855f7, #facc15);
-    color: #f9fafb;
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.7);
-  }
-  #start-game-btn:disabled {
-    opacity: 0.5;
-    background: #1f2937;
-    border-color: #4b5563;
-    cursor: default;
-  }
+/* 게임 시작 버튼 – 더 화려하게 */
+#start-game-btn {
+  padding: 8px 22px;
+  border-radius: 999px;
+  border: 1px solid #fbbf24;
+  background: radial-gradient(circle at 0% 0%, #fecaca, transparent 55%),
+    linear-gradient(135deg,#450a0a,#b91c1c,#f97316);
+  color:#fefce8;
+  font-weight:800;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+  box-shadow: 0 0 10px rgba(248, 250, 252, 0.3),
+    0 6px 16px rgba(0,0,0,0.7);
+  cursor:pointer;
+}
+#start-game-btn:disabled {
+  opacity: 0.5;
+  background:#374151;
+  border-color:#4b5563;
+  box-shadow:none;
+  cursor: default;
+}
 
   #dice-row {
     display: flex;
@@ -444,13 +469,14 @@
 
       
 
-      /* 내 프로필 (맨 아래 왼쪽 큰 카드) */
-      #my-profile-bar {
-        margin-top: 6px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
+     #my-profile-bar {
+  margin-top: auto;   /* 남는 세로 공간을 위에서 먹고, 프로필 바는 맨 아래로 */
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+      
       #my-profile-card {
         flex: 0 0 260px;
         border-radius: 14px;
@@ -749,6 +775,7 @@
     <script src="client.js"></script>
   </body>
 </html>
+
 
 
 
