@@ -22,8 +22,9 @@ const stopBtn = document.getElementById('stop-btn');
 
 const diceRow = document.getElementById('dice-row');
 const diceSumSpan = document.getElementById('dice-sum');
+const moveDistanceSpan = document.getElementById('move-distance');
 
-const boardContainer = document.getElementById('board');
+const boardContainer = document.getElementById('board'); // 현재는 안 쓰지만 그대로 둠
 const faceUpCardSpan = document.getElementById('faceup-card');
 const remainingEggsSpan = document.getElementById('remaining-eggs');
 
@@ -32,8 +33,8 @@ const logArea = document.getElementById('log-area');
 
 const opponentCard1 = document.getElementById('opponent-card-1');
 const opponentCard2 = document.getElementById('opponent-card-2');
+const opponentCard3 = document.getElementById('opponent-card-3');
 const startGameBtn = document.getElementById('start-game-btn');
-
 const gameOverPanel = document.getElementById('game-over-panel');
 const gameOverTitle = document.getElementById('game-over-title');
 const gameOverList = document.getElementById('game-over-list');
@@ -431,30 +432,89 @@ function renderDice() {
   currentDice.forEach((v) => {
     const d = document.createElement('div');
     d.className = 'die';
-    d.textContent = v;
+    d.textContent = v; // 숫자를 주사위 이미지처럼 보여주는 정사각형
     diceRow.appendChild(d);
   });
 
   diceSumSpan.textContent = currentSum;
 
+  // 이동 칸수 / 하이라이트 갱신
+  updateMovePreview();
+
   // 첫 번째 주사위 전에는 stop 금지
-  if (currentDice.length === 0) {
-    stopBtn.disabled = true;
+  stopBtn.disabled = currentDice.length === 0;
+}
+
+function clearMoveHighlight() {
+  for (let i = 1; i <= 21; i++) {
+    const cell = document.getElementById(`cell-pos-${i}`);
+    if (cell) cell.classList.remove('cell-highlight');
+  }
+}
+
+function updateMovePreview() {
+  // 하이라이트/텍스트 초기화
+  clearMoveHighlight();
+  if (moveDistanceSpan) {
+    moveDistanceSpan.textContent = '→ 0칸 이동';
+  }
+
+  // 내 차례가 아니거나, 아직 주사위 안 굴리거나, 버스트면 미리보기 X
+  if (
+    !myId ||
+    !gameStarted ||
+    currentPlayerId !== myId ||
+    currentDice.length === 0 ||
+    currentSum > 7
+  ) {
+    return;
+  }
+
+  const me = players.find((p) => p.id === myId);
+  if (!me) return;
+
+  const boardSizeLocal = boardSize || 21;
+  if (boardSizeLocal <= 0) return;
+
+  // 규칙: 예) 2,3 → (2+3) * 2 = 10칸
+  const moveDist = currentSum * currentDice.length;
+  if (moveDistanceSpan) {
+    moveDistanceSpan.textContent = `→ ${moveDist}칸 이동`;
+  }
+
+  const curPos = me.position ?? 0; // 0 = 뗏목
+  let raw = 0;
+
+  if (curPos === 0) {
+    raw = moveDist % boardSizeLocal;
   } else {
-    stopBtn.disabled = false;
+    raw = (curPos + moveDist) % boardSizeLocal;
+  }
+  if (raw === 0) raw = boardSizeLocal; // 0이면 21번 칸으로
+
+  const highlightCell = document.getElementById(`cell-pos-${raw}`);
+  if (highlightCell) {
+    highlightCell.classList.add('cell-highlight');
   }
 }
 
 function updateCardInfo() {
-  if (faceUpCard != null) {
-    faceUpCardSpan.textContent = `${faceUpCard}점`;
-  } else if (bonus7Available) {
-    faceUpCardSpan.textContent = '모든 알 소진! (이제 한 바퀴 완주 시 7점)';
-  } else {
-    faceUpCardSpan.textContent = '-';
+  if (faceUpCardSpan) {
+    if (faceUpCard != null) {
+      // 현재 공개된 알 카드 점수
+      faceUpCardSpan.textContent = String(faceUpCard);
+    } else if (bonus7Available) {
+      // 알이 다 떨어진 이후엔 7점 보너스
+      faceUpCardSpan.textContent = '7';
+    } else {
+      // 아직 아무 정보 없을 때
+      faceUpCardSpan.textContent = '0';
+    }
   }
 
-  remainingEggsSpan.textContent = String(remainingEggs);
+  if (remainingEggsSpan) {
+    remainingEggsSpan.textContent = String(remainingEggs);
+  }
 }
 
 function updateTurnUI() {
@@ -464,6 +524,8 @@ function updateTurnUI() {
     turnIndicator.textContent = '대기 중…';
     rollBtn.disabled = true;
     stopBtn.disabled = true;
+    clearMoveHighlight();
+    if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
     return;
   }
 
@@ -473,11 +535,14 @@ function updateTurnUI() {
   if (isMyTurn) {
     turnIndicator.textContent = `내 차례 (${name})`;
     rollBtn.disabled = false;
-    // stop 버튼은 renderDice에서 제어(첫 주사위 전에는 막기)
+    // stop 버튼은 renderDice에서 제어
+    updateMovePreview();
   } else {
     turnIndicator.textContent = `${name}의 차례`;
     rollBtn.disabled = true;
     stopBtn.disabled = true;
+    clearMoveHighlight();
+    if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
   }
 }
 
@@ -498,7 +563,7 @@ function updateMyScoreFromState() {
 function renderOpponents() {
   if (!myId) return;
   const others = players.filter((p) => p.id !== myId);
-  const slots = [opponentCard1, opponentCard2];
+  const slots = [opponentCard1, opponentCard2, opponentCard3];
 
   // 카드 초기화
   slots.forEach((card) => {
@@ -525,5 +590,6 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
