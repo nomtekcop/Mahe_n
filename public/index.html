@@ -2,27 +2,24 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <title>마헤 – 알 카드 레이스</title>
+    <title>MAHÉ – 알 카드 레이스</title>
     <style>
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         padding: 0;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
           sans-serif;
-        background: url('bg-main.png') center center / cover no-repeat fixed;
+        background: #020617;
+        color: #f9fafb;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
       }
-      .hidden {
-        display: none;
-      }
+      .hidden { display: none; }
 
-      /* 프로필 카드 */
+      /* ===== 프로필 / 입장 화면 ===== */
       #profile-screen {
         width: 360px;
         padding: 24px;
@@ -55,9 +52,7 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         color: #fff;
       }
-      #nickname-input::placeholder {
-        color: #777;
-      }
+      #nickname-input::placeholder { color: #777; }
       #nickname-input:focus,
       #color-select:focus {
         border-color: #d4af37;
@@ -76,7 +71,6 @@
         align-items: center;
         font-size: 14px;
         cursor: pointer;
-        position: relative;
         overflow: hidden;
         transition: all 0.2s ease;
       }
@@ -119,8 +113,6 @@
         box-shadow: none;
         cursor: default;
       }
-
-      /* 공통 버튼 효과 */
       button {
         transition: transform 0.06s ease, box-shadow 0.06s ease,
           filter 0.06s ease;
@@ -135,92 +127,104 @@
         filter: brightness(0.96);
       }
 
-      /* 게임 화면 */
+      /* ===== 게임 화면 전체 ===== */
       #game-screen {
         width: 100%;
-        max-width: 1100px;
+        max-width: 1300px;
         min-height: 90vh;
         background: radial-gradient(circle at 20% 0%, rgba(34, 197, 94, 0.18), transparent 55%),
-          radial-gradient(
-            circle at 80% 100%,
-            rgba(45, 212, 191, 0.18),
-            transparent 55%
-          ),
+          radial-gradient(circle at 80% 100%, rgba(45, 212, 191, 0.18), transparent 55%),
           linear-gradient(145deg, #022c22, #052e16 45%, #022c22 100%);
         border-radius: 18px;
         border: 2px solid rgba(255, 255, 255, 0.4);
-        padding: 16px 24px 24px;
+        padding: 16px 24px 20px;
+        box-shadow: 0 18px 35px rgba(0,0,0,0.75),
+          inset 0 1px 0 rgba(255,255,255,0.06);
         display: flex;
         flex-direction: column;
         gap: 10px;
-        box-shadow: 0 18px 35px rgba(0, 0, 0, 0.75),
-          inset 0 1px 0 rgba(255, 255, 255, 0.06);
       }
 
-      #header-row {
+      /* 위쪽 상대 프로필 두 장 */
+      #top-profiles {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        gap: 16px;
+        margin-bottom: 2px;
       }
-
-      #game-title {
-        font-size: 22px;
-        font-weight: 800;
-        letter-spacing: 0.2em;
-        color: #fefce8;
-      }
-
-      #card-info {
-        font-size: 14px;
-        color: #e5e7eb;
-        text-align: right;
-      }
-
-      #main-row {
-        display: grid;
-        grid-template-columns: 2fr 1.2fr;
-        gap: 12px;
-        margin-top: 4px;
-      }
-
-      /* 왼쪽: 보드 */
-      #board-panel {
-        background: rgba(15, 23, 42, 0.96);
+      .opponent-card {
+        flex: 1;
+        min-height: 70px;
         border-radius: 14px;
-        padding: 10px;
-        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15,23,42,0.96);
+        border: 1px solid rgba(148,163,184,0.7);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+      }
+      .opponent-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #e5e7eb;
+      }
+      .opponent-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .opponent-name {
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .opponent-score {
+        font-size: 12px;
         color: #e5e7eb;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+
+      /* 중앙: 보드 + 가운데 영역 */
+      #board-layout {
+        flex: 1;
+        display: grid;
+        grid-template-columns: auto 1.3fr auto;
+        gap: 10px;
+      }
+
+      /* 왼쪽 세로 (4,3,2번 칸) */
+      #left-column {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        justify-content: space-between;
+        padding: 6px 0;
       }
 
-      #board {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
+      /* 오른쪽 세로 (12,13,14,15 + 뗏목) */
+      #right-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 6px 0;
       }
 
+      /* 보드 공통 칸 스타일 */
       .board-cell {
-        background: #020617;
+        background: rgba(15,23,42,0.96);
         border-radius: 10px;
+        border: 1px solid rgba(148,163,184,0.7);
         padding: 4px;
-        border: 1px solid rgba(148, 163, 184, 0.7);
-        min-height: 42px;
+        min-width: 46px;
+        min-height: 46px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
       }
-      .board-cell.cell-start {
-        border-color: #facc15;
-        box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
-      }
-      .cell-label {
+      .board-cell-label {
         font-size: 11px;
         color: #cbd5f5;
       }
-      .cell-tokens {
+      .board-cell-tokens {
         display: flex;
         flex-wrap: wrap;
         gap: 2px;
@@ -230,207 +234,197 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        border: 1px solid rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(15,23,42,0.9);
       }
 
-      /* 오른쪽: 정보/조작 패널 */
-      #side-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      #turn-panel {
-        background: #f9fafb;
-        border-radius: 14px;
-        padding: 8px 10px;
-        border: 1px solid #e5e7eb;
-      }
-      #turn-indicator {
-        font-size: 15px;
-        font-weight: 700;
-        margin-bottom: 4px;
-      }
-
-      #action-buttons {
-        display: flex;
+      /* 위쪽 가로줄 (5 ~ 12) */
+      #top-row {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
         gap: 6px;
         margin-bottom: 6px;
       }
-      #roll-btn {
-        flex: 1;
+
+      /* 아래쪽 가로줄 (1, 21(넓게), 20~16) */
+      #bottom-row {
+        display: grid;
+        grid-template-columns: 1fr 2fr repeat(5, 1fr);
+        gap: 6px;
+        margin-top: 6px;
+      }
+      #cell-pos-21 {
+        /* 21번 칸 – 넓게 + 점수 강조 */
+        position: relative;
+        background: radial-gradient(circle at 20% 0%, #facc15, #b45309);
+        border-color: #fbbf24;
+        box-shadow: 0 0 12px rgba(250,204,21,0.9);
+        color: #111827;
+      }
+      #cell-pos-21 .board-cell-label {
+        font-weight: 800;
+        color: #1f2937;
+      }
+      #cell-pos-21 .reward-text {
+        font-size: 12px;
+        margin-top: 2px;
+      }
+
+      /* 중앙 – 주사위 카드 3개 + 굴리기 버튼들 */
+      #center-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      #dice-cards {
+        display: flex;
+        gap: 8px;
+      }
+      .dice-card {
+        width: 70px;
+        height: 100px;
+        border-radius: 10px;
+        background: #f9fafb;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 4px;
+        font-size: 14px;
+      }
+      .dice-value {
+        font-size: 24px;
+        font-weight: 800;
+        margin-top: 4px;
+      }
+      .dice-roll-btn {
+        margin-bottom: 2px;
+        padding: 3px 6px;
         border-radius: 999px;
         border: 1px solid #4c1d95;
-        background: linear-gradient(
-          135deg,
-          #170d2c 0%,
-          #21194b 30%,
-          #4338ca 60%,
-          #7c3aed 100%
-        );
+        background: linear-gradient(135deg,#170d2c,#4338ca,#7c3aed);
         color: #f9fafb;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+        font-size: 11px;
         cursor: pointer;
       }
-      #roll-btn:disabled {
+      .dice-roll-btn:disabled {
         opacity: 0.5;
         background: #1e293b;
       }
-      #stop-btn {
-        flex: 1;
+
+      #dice-info-text {
+        font-size: 13px;
+        text-align: center;
+      }
+
+      #move-btn {
+        margin-top: 4px;
+        padding: 6px 16px;
         border-radius: 999px;
         border: 1px solid #15803d;
-        background: linear-gradient(
-          135deg,
-          #064e3b 0%,
-          #15803d 40%,
-          #22c55e 100%
-        );
+        background: linear-gradient(135deg,#064e3b,#15803d,#22c55e);
         color: #ecfdf5;
         font-weight: 700;
-        letter-spacing: 0.04em;
         cursor: pointer;
       }
-      #stop-btn:disabled {
+      #move-btn:disabled {
         opacity: 0.5;
         background: #15803d;
       }
 
-      #dice-row {
+      /* 뗏목 영역 (오른쪽 큰 박스) */
+      #raft-box {
+        flex: 1;
+        border-radius: 14px;
+        background: rgba(15,23,42,0.96);
+        border: 2px dashed rgba(248,250,252,0.7);
+        padding: 6px 8px;
         display: flex;
-        gap: 4px;
-        margin-bottom: 4px;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 120px;
       }
-      .die {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        border: 1px solid #9ca3af;
+      #raft-title {
+        font-size: 13px;
+        font-weight: 700;
+      }
+      #raft-tokens {
+        margin-top: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      /* 내 프로필 (맨 아래 왼쪽 큰 카드) */
+      #my-profile-bar {
+        margin-top: 6px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        background: radial-gradient(
-          circle at 30% 25%,
-          #ffffff 0%,
-          #e5e7eb 40%,
-          #cbd5e1 100%
-        );
-        box-shadow: 0 1px 0 #ffffff, 0 3px 4px rgba(0, 0, 0, 0.45);
+        gap: 10px;
       }
-
-      #dice-sum-info {
-        font-size: 13px;
-        color: #374151;
-      }
-
-      #start-game-btn {
-        width: 100%;
-        margin-top: 6px;
-        padding: 8px 10px;
-        border-radius: 999px;
-        border: 1px solid #7f1d1d;
-        background: linear-gradient(
-          135deg,
-          #2b0a0a,
-          #5b0f0f,
-          #9f0e0e,
-          #d61f1f,
-          #ff4d4d
-        );
-        color: #fff5f5;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        cursor: pointer;
-      }
-      #start-game-btn:disabled {
-        opacity: 0.5;
-        background: #4b5563;
-      }
-
-      #player-list-panel {
-        background: #f9fafb;
+      #my-profile-card {
+        flex: 0 0 260px;
         border-radius: 14px;
-        padding: 6px 8px;
-        border: 1px solid #e5e7eb;
-        font-size: 12px;
-      }
-      .player-row {
-        margin: 2px 0;
-      }
-
-      #me-panel {
-        background: rgba(255, 255, 255, 0.94);
-        border-radius: 14px;
-        padding: 6px 10px;
-        border: 1px solid rgba(250, 204, 21, 0.7);
+        background: rgba(255,255,255,0.94);
+        border: 1px solid rgba(250,204,21,0.7);
         display: flex;
         align-items: center;
         gap: 8px;
+        padding: 6px 10px;
       }
-      .avatar-circle {
+      .my-avatar-circle {
         width: 42px;
         height: 42px;
         border-radius: 50%;
-        overflow: hidden;
         border: 2px solid #e5e7eb;
+        overflow: hidden;
       }
-      .avatar-circle img {
+      .my-avatar-circle img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
-      #my-name {
-        font-weight: 700;
-      }
-      #my-score {
+      #my-name { font-weight: 700; color: #111827; }
+      #my-score { font-size: 14px; font-weight: 700; color: #b45309; }
+      #my-egg-info { font-size: 11px; color: #4b5563; }
+
+      #turn-indicator {
         font-size: 14px;
-        font-weight: 700;
-        color: #b45309;
-      }
-      #my-egg-info {
-        font-size: 11px;
-        color: #4b5563;
+        margin-left: auto;
       }
 
+      /* 로그 영역 */
       #log-area {
-        margin-top: 6px;
-        background: rgba(15, 23, 42, 0.96);
-        border-radius: 10px;
-        padding: 6px 8px;
-        border: 1px solid rgba(148, 163, 184, 0.7);
-        color: #e5e7eb;
-        font-size: 11px;
-        max-height: 120px;
+        flex: 1;
+        min-height: 60px;
+        max-height: 90px;
         overflow-y: auto;
+        border-radius: 10px;
+        background: rgba(15,23,42,0.96);
+        border: 1px solid rgba(148,163,184,0.7);
+        padding: 4px 6px;
+        font-size: 11px;
       }
 
       /* 게임 종료 패널 */
       #game-over-panel {
-        margin-top: 8px;
+        margin-top: 6px;
       }
       .game-over-card {
         border-radius: 12px;
         border: 1px solid #fbbf24;
-        padding: 10px 12px;
+        padding: 8px 10px;
         background: #fffbeb;
         font-size: 13px;
+        color: #111827;
       }
-      .game-over-title {
-        font-weight: 700;
-        margin-bottom: 4px;
-      }
-      .game-over-row {
-        margin: 2px 0;
-      }
-      .game-over-row.winner {
-        color: #d97706;
-        font-weight: 700;
-      }
+      .game-over-row { margin: 2px 0; }
+      .game-over-row.winner { color: #d97706; font-weight: 700; }
       #restart-btn {
-        margin-top: 6px;
-        padding: 5px 10px;
+        margin-top: 4px;
+        padding: 4px 10px;
         border-radius: 999px;
         border: 1px solid #9ca3af;
         background: #e5e7eb;
@@ -440,7 +434,7 @@
     </style>
   </head>
   <body>
-    <!-- 프로필 화면 -->
+    <!-- ===== 프로필 입력 화면 ===== -->
     <div id="profile-screen">
       <h1>마헤 입장</h1>
       <input
@@ -471,75 +465,181 @@
       <button id="enter-game-btn">게임 입장</button>
     </div>
 
-    <!-- 게임 화면 -->
+    <!-- ===== 게임 화면 ===== -->
     <div id="game-screen" class="hidden">
-      <div id="header-row">
-        <div id="game-title">MAHÉ</div>
-        <div id="card-info">
-          <div>공개된 알 카드: <span id="faceup-card">-</span></div>
-          <div>남은 알 카드: <span id="remaining-eggs">0</span>장</div>
+      <!-- 위쪽 상대 프로필 -->
+      <div id="top-profiles">
+        <div id="opponent-card-1" class="opponent-card"></div>
+        <div id="opponent-card-2" class="opponent-card"></div>
+      </div>
+
+      <!-- 중앙: 보드 레이아웃 -->
+      <div id="board-layout">
+        <!-- 왼쪽 세로 칸 (4,3,2) -->
+        <div id="left-column">
+          <div id="cell-pos-4" class="board-cell">
+            <div class="board-cell-label">4</div>
+            <div class="board-cell-tokens"></div>
+          </div>
+          <div id="cell-pos-3" class="board-cell">
+            <div class="board-cell-label">3</div>
+            <div class="board-cell-tokens"></div>
+          </div>
+          <div id="cell-pos-2" class="board-cell">
+            <div class="board-cell-label">2</div>
+            <div class="board-cell-tokens"></div>
+          </div>
+        </div>
+
+        <!-- 가운데: 위쪽(5~12), 중앙(주사위), 아래쪽(1,21,20~16) -->
+        <div>
+          <!-- 위쪽 가로줄: 5~12 -->
+          <div id="top-row">
+            <!-- 5~12 -->
+            <div id="cell-pos-5" class="board-cell">
+              <div class="board-cell-label">5</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-6" class="board-cell">
+              <div class="board-cell-label">6</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-7" class="board-cell">
+              <div class="board-cell-label">7</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-8" class="board-cell">
+              <div class="board-cell-label">8</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-9" class="board-cell">
+              <div class="board-cell-label">9</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-10" class="board-cell">
+              <div class="board-cell-label">10</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-11" class="board-cell">
+              <div class="board-cell-label">11</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-12" class="board-cell">
+              <div class="board-cell-label">12</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+          </div>
+
+          <!-- 중앙: 주사위 카드 + 안내 -->
+          <div id="center-area">
+            <div id="dice-cards">
+              <div class="dice-card">
+                <div>첫 번째</div>
+                <div id="dice-val-1" class="dice-value">?</div>
+                <button id="roll-btn-1" class="dice-roll-btn">굴리기</button>
+              </div>
+              <div class="dice-card">
+                <div>두 번째</div>
+                <div id="dice-val-2" class="dice-value">?</div>
+                <button id="roll-btn-2" class="dice-roll-btn" disabled>
+                  굴리기
+                </button>
+              </div>
+              <div class="dice-card">
+                <div>세 번째</div>
+                <div id="dice-val-3" class="dice-value">?</div>
+                <button id="roll-btn-3" class="dice-roll-btn" disabled>
+                  굴리기
+                </button>
+              </div>
+            </div>
+            <div id="dice-info-text">
+              합계: <span id="dice-sum">0</span> (7을 넘으면 버스트!)
+            </div>
+            <button id="move-btn" disabled>이동하기</button>
+          </div>
+
+          <!-- 아래쪽 가로줄: 1, 21(넓게), 20,19,18,17,16 -->
+          <div id="bottom-row">
+            <div id="cell-pos-1" class="board-cell">
+              <div class="board-cell-label">1</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-21" class="board-cell">
+              <div class="board-cell-label">21</div>
+              <div class="reward-text">여기를 지나면 알 카드 획득</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-20" class="board-cell">
+              <div class="board-cell-label">20</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-19" class="board-cell">
+              <div class="board-cell-label">19</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-18" class="board-cell">
+              <div class="board-cell-label">18</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-17" class="board-cell">
+              <div class="board-cell-label">17</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+            <div id="cell-pos-16" class="board-cell">
+              <div class="board-cell-label">16</div>
+              <div class="board-cell-tokens"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 오른쪽: 위/아래 칸 + 뗏목 큰 박스 -->
+        <div id="right-column">
+          <div id="cell-pos-13" class="board-cell">
+            <div class="board-cell-label">13</div>
+            <div class="board-cell-tokens"></div>
+          </div>
+          <div id="raft-box">
+            <div id="raft-title">뗏목 (시작 / 버스트 복귀)</div>
+            <div id="raft-tokens"></div>
+          </div>
+          <div id="cell-pos-14" class="board-cell">
+            <div class="board-cell-label">14</div>
+            <div class="board-cell-tokens"></div>
+          </div>
+          <div id="cell-pos-15" class="board-cell">
+            <div class="board-cell-label">15</div>
+            <div class="board-cell-tokens"></div>
+          </div>
         </div>
       </div>
 
-      <div id="main-row">
-        <!-- 왼쪽: 보드 -->
-        <div id="board-panel">
-          <div style="margin-bottom: 4px; font-size: 13px">
-            <strong>트랙</strong> – 0번 칸을 지나면 알 카드를 얻어요.
+      <!-- 내 프로필 + 턴 표시 + 로그 -->
+      <div id="my-profile-bar">
+        <div id="my-profile-card">
+          <div class="my-avatar-circle">
+            <img id="my-avatar" src="default-avatar.png" alt="" />
           </div>
-          <div id="board"></div>
+          <div>
+            <div id="my-name">나</div>
+            <div id="my-score">0점</div>
+            <div id="my-egg-info">알 합계 0, 장수 0장, 보너스 0</div>
+          </div>
         </div>
 
-        <!-- 오른쪽: 조작/정보 -->
-        <div id="side-panel">
-          <div id="turn-panel">
-            <div id="turn-indicator">대기 중…</div>
-            <div id="action-buttons">
-              <button id="roll-btn" disabled>주사위 굴리기</button>
-              <button id="stop-btn" disabled>멈추고 이동</button>
-            </div>
-            <div id="dice-row"></div>
-            <div id="dice-sum-info">
-              합계: <span id="dice-sum">0</span> (7을 넘기면 버스트!)
-            </div>
-            <button id="start-game-btn" disabled>게임 시작</button>
-          </div>
+        <div id="turn-indicator">대기 중…</div>
 
-          <div id="player-list-panel">
-            <div style="font-weight: 700; margin-bottom: 4px">플레이어</div>
-            <div id="player-list"></div>
-          </div>
+        <div id="log-area"></div>
+      </div>
 
-          <div id="me-panel">
-            <div class="avatar-circle">
-              <img id="my-avatar" src="default-avatar.png" alt="" />
-            </div>
-            <div>
-              <div id="my-name">나</div>
-              <div id="my-score">0점</div>
-              <div id="my-egg-info">알 합계 0, 장수 0장, 보너스 0</div>
-            </div>
-          </div>
-
-          <div id="log-area"></div>
-
-          <div id="game-over-panel" class="hidden">
-            <div class="game-over-card">
-              <div id="game-over-title" class="game-over-title">게임 종료</div>
-              <div id="game-over-list" class="game-over-list"></div>
-              <button id="restart-btn">같은 인원으로 다시 하기</button>
-            </div>
-          </div>
+      <div id="game-over-panel" class="hidden">
+        <div class="game-over-card">
+          <div id="game-over-title">게임 종료</div>
+          <div id="game-over-list"></div>
+          <button id="restart-btn">같은 인원으로 다시 하기</button>
         </div>
       </div>
     </div>
-
-    <!-- 필요하면 효과음 파일을 넣어 사용 -->
-    <audio id="bgm" src="" loop></audio>
-    <audio id="sfx-roll" src=""></audio>
-    <audio id="sfx-bust" src=""></audio>
-    <audio id="sfx-egg" src=""></audio>
-    <audio id="sfx-win" src=""></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
