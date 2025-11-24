@@ -371,59 +371,56 @@ function renderPlayerList() {
 }
 
 function renderBoard() {
-  if (!boardContainer) return;
-  boardContainer.innerHTML = '';
-
-  // 0 ~ boardSize-1
-  for (let i = 0; i < boardSize; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'board-cell';
-
-    const label = document.createElement('div');
-    label.className = 'cell-label';
-    if (i === 0) {
-      label.textContent = '0 (완주)';
-      cell.classList.add('cell-start');
-    } else {
-      label.textContent = String(i);
-    }
-    cell.appendChild(label);
-
-    const tokenArea = document.createElement('div');
-    tokenArea.className = 'cell-tokens';
-
-    // 이 칸에 있는 플레이어들
-    players
-      .filter((p) => p.position === i)
-      .forEach((p) => {
-        const token = document.createElement('div');
-        token.className = 'token';
-        token.dataset.playerId = p.id;
-
-        switch (p.color) {
-          case 'red':
-            token.style.background = '#f87171';
-            break;
-          case 'green':
-            token.style.background = '#4ade80';
-            break;
-          case 'blue':
-            token.style.background = '#60a5fa';
-            break;
-          case 'yellow':
-            token.style.background = '#facc15';
-            break;
-          default:
-            token.style.background = '#e5e7eb';
-        }
-
-        token.title = p.name;
-        tokenArea.appendChild(token);
-      });
-
-    cell.appendChild(tokenArea);
-    boardContainer.appendChild(cell);
+  // 1~21번 칸 토큰 초기화
+  for (let i = 1; i <= 21; i++) {
+    const cell = document.querySelector(
+      `#cell-pos-${i} .board-cell-tokens`
+    );
+    if (cell) cell.innerHTML = '';
   }
+  // 뗏목(시작/복귀 칸) 초기화
+  const raft = document.getElementById('raft-tokens');
+  if (raft) raft.innerHTML = '';
+
+  // 플레이어 말 배치
+  players.forEach((p) => {
+    // 지금 버전은 "플레이어당 말 1개" 기준 → position 필드만 사용
+    const pos = p.position ?? 0;
+
+    const token = document.createElement('div');
+    token.className = 'token';
+    // 색깔
+    switch (p.color) {
+      case 'red':
+        token.style.background = '#f97373';
+        break;
+      case 'green':
+        token.style.background = '#4ade80';
+        break;
+      case 'blue':
+        token.style.background = '#60a5fa';
+        break;
+      case 'yellow':
+        token.style.background = '#facc15';
+        break;
+      default:
+        token.style.background = '#e5e7eb';
+    }
+    token.title = p.name || '';
+
+    if (pos === 0) {
+      // 0 = 뗏목 위치
+      raft && raft.appendChild(token);
+    } else {
+      // 서버 기준: 0~20 (0이 완주/시작 칸)이었으면
+      // pos가 0이면 21번 칸, 1~20은 그대로 1~20
+      const displayPos = pos === 0 ? 21 : pos;
+      const container = document.querySelector(
+        `#cell-pos-${displayPos} .board-cell-tokens`
+      );
+      container && container.appendChild(token);
+    }
+  });
 }
 
 function renderDice() {
@@ -495,3 +492,4 @@ function updateMyScoreFromState() {
   if (!me) return;
   updateMyScore(me);
 }
+
