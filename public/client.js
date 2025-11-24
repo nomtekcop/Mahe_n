@@ -429,7 +429,7 @@ function renderBoard() {
   });
 }
 
-ffunction renderDice() {
+function renderDice() {
   diceRow.innerHTML = '';
 
   // 숫자를 실제 주사위 눈 문자로 바꿔서 표시
@@ -598,6 +598,7 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
 
