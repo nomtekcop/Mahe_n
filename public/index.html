@@ -193,29 +193,13 @@
   flex: 1; /* 가운데 보드가 세로 공간을 더 많이 차지하게 */
 }
       
-/* 왼쪽 세로 (4,3,2) */
-#left-column {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-#left-column .board-cell {
-  flex: 1;
-  min-height: 100px;  /* 🔥 세로 칸 길쭉하게 */
-}
-
-/* 오른쪽 세로 (13, 뗏목, 14,15) */
-#right-column {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
+#left-column .board-cell,
 #right-column .board-cell {
-  flex: 1;
-  min-height: 100px;  /* 🔥 여기도 길쭉하게 */
+  flex: 0 0 auto;  /* 세로로 늘어나지 않게 */
+  min-height: 70px; /* 살짝만 기존보다 크게 */
 }
+
+      
   /* 가운데 스택 (윗줄 / 중앙 / 아랫줄) */
   #center-stack {
     display: flex;
@@ -880,6 +864,7 @@
     <script src="client.js"></script>
   </body>
 </html>
+
 
 
 
