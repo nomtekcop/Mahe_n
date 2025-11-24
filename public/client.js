@@ -226,6 +226,7 @@ function connectSocket(myProfile) {
     currentDice = dice;
     currentSum = sum;
     renderDice();
+    updateMovePreview(playerId, busted);
 
     const p = players.find((pl) => pl.id === playerId);
     const name = p ? p.name : '플레이어';
@@ -280,6 +281,8 @@ function connectSocket(myProfile) {
 
     renderBoard();
     updateCardInfo();
+    clearMoveHighlight();
+    if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
   });
 
   socket.on('bonus7Ready', () => {
@@ -426,20 +429,20 @@ function renderBoard() {
   });
 }
 
-function renderDice() {
+ffunction renderDice() {
   diceRow.innerHTML = '';
+
+  // 숫자를 실제 주사위 눈 문자로 바꿔서 표시
+  const pipChars = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
   currentDice.forEach((v) => {
     const d = document.createElement('div');
     d.className = 'die';
-    d.textContent = v; // 숫자를 주사위 이미지처럼 보여주는 정사각형
+    d.textContent = pipChars[v] || v; // 1~6은 ⚀~⚅, 그 외엔 그냥 숫자
     diceRow.appendChild(d);
   });
 
   diceSumSpan.textContent = currentSum;
-
-  // 이동 칸수 / 하이라이트 갱신
-  updateMovePreview();
 
   // 첫 번째 주사위 전에는 stop 금지
   stopBtn.disabled = currentDice.length === 0;
@@ -448,30 +451,26 @@ function renderDice() {
 function clearMoveHighlight() {
   for (let i = 1; i <= 21; i++) {
     const cell = document.getElementById(`cell-pos-${i}`);
-    if (cell) cell.classList.remove('cell-highlight');
+    if (!cell) continue;
+    cell.classList.remove('cell-highlight');
+    cell.style.boxShadow = ''; // 색깔 하이라이트도 함께 제거
   }
 }
 
-function updateMovePreview() {
+function updateMovePreview(playerId, busted) {
   // 하이라이트/텍스트 초기화
   clearMoveHighlight();
   if (moveDistanceSpan) {
     moveDistanceSpan.textContent = '→ 0칸 이동';
   }
 
-  // 내 차례가 아니거나, 아직 주사위 안 굴리거나, 버스트면 미리보기 X
-  if (
-    !myId ||
-    !gameStarted ||
-    currentPlayerId !== myId ||
-    currentDice.length === 0 ||
-    currentSum > 7
-  ) {
+  // 게임 안 켜져 있거나, 주사위 없음, 버스트면 미리보기 X
+  if (!gameStarted || currentDice.length === 0 || busted) {
     return;
   }
 
-  const me = players.find((p) => p.id === myId);
-  if (!me) return;
+  const player = players.find((p) => p.id === playerId);
+  if (!player) return;
 
   const boardSizeLocal = boardSize || 21;
   if (boardSizeLocal <= 0) return;
@@ -482,7 +481,7 @@ function updateMovePreview() {
     moveDistanceSpan.textContent = `→ ${moveDist}칸 이동`;
   }
 
-  const curPos = me.position ?? 0; // 0 = 뗏목
+  let curPos = player.position ?? 0; // 0 = 뗏목
   let raw = 0;
 
   if (curPos === 0) {
@@ -493,9 +492,20 @@ function updateMovePreview() {
   if (raw === 0) raw = boardSizeLocal; // 0이면 21번 칸으로
 
   const highlightCell = document.getElementById(`cell-pos-${raw}`);
-  if (highlightCell) {
-    highlightCell.classList.add('cell-highlight');
-  }
+  if (!highlightCell) return;
+
+  highlightCell.classList.add('cell-highlight');
+
+  // 플레이어 색깔에 따라 하이라이트 색 다르게
+  const colorMap = {
+    red: 'rgba(248,113,113,0.95)',
+    green: 'rgba(74,222,128,0.95)',
+    blue: 'rgba(96,165,250,0.95)',
+    yellow: 'rgba(250,204,21,0.95)',
+  };
+  const glow = colorMap[player.color] || 'rgba(56,189,248,0.9)';
+
+  highlightCell.style.boxShadow = `0 0 0 3px ${glow}, 0 0 16px ${glow}`;
 }
 
 function updateCardInfo() {
@@ -535,8 +545,6 @@ function updateTurnUI() {
   if (isMyTurn) {
     turnIndicator.textContent = `내 차례 (${name})`;
     rollBtn.disabled = false;
-    // stop 버튼은 renderDice에서 제어
-    updateMovePreview();
   } else {
     turnIndicator.textContent = `${name}의 차례`;
     rollBtn.disabled = true;
@@ -590,6 +598,7 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
 
