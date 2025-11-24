@@ -411,13 +411,12 @@ function renderBoard() {
     }
     token.title = p.name || '';
 
-    if (pos === 0) {
-      // 0 = 뗏목 위치
+   if (pos === 0) {
+      // 0 = 뗏목(시작/복귀) 위치
       raft && raft.appendChild(token);
     } else {
-      // 서버 기준: 0~20 (0이 완주/시작 칸)이었으면
-      // pos가 0이면 21번 칸, 1~20은 그대로 1~20
-      const displayPos = pos === 0 ? 21 : pos;
+      // 1~21번 = 보드 위 칸 번호 그대로 사용
+      const displayPos = pos;
       const container = document.querySelector(
         `#cell-pos-${displayPos} .board-cell-tokens`
       );
@@ -511,6 +510,8 @@ function renderOpponents() {
     if (!slots[idx]) return;
     const card = slots[idx];
 
+    const totalScore = (p.eggsTotal || 0) + (p.bonus7 || 0);
+
     card.innerHTML = `
       <div class="opponent-avatar">
         <img src="${p.avatar || 'default-avatar.png'}" />
@@ -518,10 +519,11 @@ function renderOpponents() {
       <div>
         <div class="opponent-name">${p.name}</div>
         <div class="opponent-score">
-          점수: ${(p.money ?? 0)}점 / 알 ${p.eggCount ?? 0}장
+          점수: ${totalScore}점 (알 ${p.eggsTotal || 0} / ${p.eggsCount || 0}장, 보너스 ${p.bonus7 || 0})
         </div>
       </div>
     `;
   });
 }
+
 
