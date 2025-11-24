@@ -30,6 +30,8 @@ const remainingEggsSpan = document.getElementById('remaining-eggs');
 const playerListArea = document.getElementById('player-list');
 const logArea = document.getElementById('log-area');
 
+const opponentCard1 = document.getElementById('opponent-card-1');
+const opponentCard2 = document.getElementById('opponent-card-2');
 const startGameBtn = document.getElementById('start-game-btn');
 
 const gameOverPanel = document.getElementById('game-over-panel');
@@ -155,6 +157,7 @@ function connectSocket(myProfile) {
     } else if (!gameStarted) {
       startGameBtn.disabled = true;
     }
+    renderOpponents();
   });
 
   socket.on('readyToStart', ({ hostId }) => {
@@ -491,5 +494,34 @@ function updateMyScoreFromState() {
   const me = players.find((p) => p.id === myId);
   if (!me) return;
   updateMyScore(me);
+}
+
+function renderOpponents() {
+  if (!myId) return;
+  const others = players.filter((p) => p.id !== myId);
+  const slots = [opponentCard1, opponentCard2];
+
+  // 카드 초기화
+  slots.forEach((card) => {
+    if (card) card.innerHTML = '';
+  });
+
+  // 최대 두 명까지만 채우기 (2~3인 기준)
+  others.forEach((p, idx) => {
+    if (!slots[idx]) return;
+    const card = slots[idx];
+
+    card.innerHTML = `
+      <div class="opponent-avatar">
+        <img src="${p.avatar || 'default-avatar.png'}" />
+      </div>
+      <div>
+        <div class="opponent-name">${p.name}</div>
+        <div class="opponent-score">
+          점수: ${(p.money ?? 0)}점 / 알 ${p.eggCount ?? 0}장
+        </div>
+      </div>
+    `;
+  });
 }
 
