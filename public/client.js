@@ -17,10 +17,17 @@ const myScoreSpan = document.getElementById('my-score');
 const myEggInfoSpan = document.getElementById('my-egg-info');
 
 const turnIndicator = document.getElementById('turn-indicator');
-const rollBtn = document.getElementById('roll-btn');
-const stopBtn = document.getElementById('stop-btn');
 
-const diceRow = document.getElementById('dice-row');
+// 🔹 새 주사위 버튼 / 눈 DOM
+const rollBtn1 = document.getElementById('roll-btn-1');
+const rollBtn2 = document.getElementById('roll-btn-2');
+const rollBtn3 = document.getElementById('roll-btn-3');
+const moveBtn  = document.getElementById('move-btn');
+
+const dieFace1 = document.getElementById('die-face-1');
+const dieFace2 = document.getElementById('die-face-2');
+const dieFace3 = document.getElementById('die-face-3');
+
 const diceSumSpan = document.getElementById('dice-sum');
 const moveDistanceSpan = document.getElementById('move-distance');
 
@@ -328,19 +335,24 @@ function connectSocket(myProfile) {
     addLog(`우승: ${winnerName}`);
   });
 
-  // 버튼들
+ // 버튼들
   startGameBtn.addEventListener('click', () => {
     if (!socket) return;
     startGameBtn.disabled = true;
     socket.emit('startGame');
   });
 
-  rollBtn.addEventListener('click', () => {
-    if (!socket || !gameStarted) return;
-    socket.emit('rollDice');
+  // 🔹 세 개의 굴리기 버튼은 모두 같은 이벤트 보냄
+  [rollBtn1, rollBtn2, rollBtn3].forEach((btn) => {
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (!socket || !gameStarted) return;
+      socket.emit('rollDice');
+    });
   });
 
-  stopBtn.addEventListener('click', () => {
+  // 🔹 이동 버튼 (기존 stopAndMove 그대로 사용)
+  moveBtn.addEventListener('click', () => {
     if (!socket || !gameStarted) return;
     socket.emit('stopAndMove');
   });
@@ -430,23 +442,59 @@ function renderBoard() {
 }
 
 function renderDice() {
-  diceRow.innerHTML = '';
-
-  // 숫자를 실제 주사위 눈 문자로 바꿔서 표시
   const pipChars = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
-  currentDice.forEach((v) => {
-    const d = document.createElement('div');
-    d.className = 'die';
-    d.textContent = pipChars[v] || v; // 1~6은 ⚀~⚅, 그 외엔 그냥 숫자
-    diceRow.appendChild(d);
-  });
+  const faces = [dieFace1, dieFace2, dieFace3];
 
-  diceSumSpan.textContent = currentSum;
+  for (let i = 0; i < 3; i++) {
+    const val = currentDice[i];
+    const el = faces[i];
+    if (!el) continue;
 
-  // 첫 번째 주사위 전에는 stop 금지
-  stopBtn.disabled = currentDice.length === 0;
+    if (!val) {
+      el.textContent = '?';
+    } else {
+      el.textContent = pipChars[val] || String(val);
+    }
+  }
+
+  if (diceSumSpan) {
+    diceSumSpan.textContent = currentSum;
+  }
+
+  updateRollButtonsState();
 }
+
+function updateRollButtonsState() {
+  const buttons = [rollBtn1, rollBtn2, rollBtn3];
+
+  buttons.forEach((b) => {
+    if (b) b.disabled = true;
+  });
+  if (moveBtn) moveBtn.disabled = true;
+
+  if (!gameStarted || !currentPlayerId) return;
+
+  const isMyTurn = myId && currentPlayerId === myId;
+  const busted = currentSum > 7;
+  const rolledCount = currentDice.length;
+
+  if (!isMyTurn || busted) {
+    // 내 차례가 아니거나, 버스트면 아무것도 못 누름
+    return;
+  }
+
+  // 몇 번째 주사위까지 굴렸는지에 따라 다음 버튼만 활성화
+  if (rolledCount === 0 && rollBtn1) rollBtn1.disabled = false;
+  if (rolledCount === 1 && rollBtn2) rollBtn2.disabled = false;
+  if (rolledCount === 2 && rollBtn3) rollBtn3.disabled = false;
+
+  // 최소 한 개라도 굴렸고, 버스트가 아니면 이동 버튼 활성화
+  if (rolledCount > 0 && !busted && moveBtn) {
+    moveBtn.disabled = false;
+  }
+}
+
 
 function clearMoveHighlight() {
   for (let i = 1; i <= 21; i++) {
@@ -532,10 +580,9 @@ function updateTurnUI() {
 
   if (!currentPlayerId) {
     turnIndicator.textContent = '대기 중…';
-    rollBtn.disabled = true;
-    stopBtn.disabled = true;
     clearMoveHighlight();
     if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
+    updateRollButtonsState();
     return;
   }
 
@@ -544,14 +591,13 @@ function updateTurnUI() {
 
   if (isMyTurn) {
     turnIndicator.textContent = `내 차례 (${name})`;
-    rollBtn.disabled = false;
   } else {
     turnIndicator.textContent = `${name}의 차례`;
-    rollBtn.disabled = true;
-    stopBtn.disabled = true;
     clearMoveHighlight();
     if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
   }
+
+  updateRollButtonsState();
 }
 
 function updateMyScore(info) {
@@ -598,6 +644,7 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
 
