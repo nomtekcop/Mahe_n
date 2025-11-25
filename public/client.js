@@ -28,6 +28,7 @@ const dieFace1 = document.getElementById('die-face-1');
 const dieFace2 = document.getElementById('die-face-2');
 const dieFace3 = document.getElementById('die-face-3');
 
+const diceSumSpanTop = document.getElementById('dice-sum-top');
 const diceSumSpan = document.getElementById('dice-sum');
 const moveDistanceSpan = document.getElementById('move-distance');
 
@@ -644,6 +645,7 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
 
