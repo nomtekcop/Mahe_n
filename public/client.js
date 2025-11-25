@@ -459,8 +459,13 @@ function renderDice() {
     }
   }
 
+  // 🔹 아래 요약 박스 합계
   if (diceSumSpan) {
     diceSumSpan.textContent = currentSum;
+  }
+  // 🔹 위쪽 "합계: 0 (7을 넘으면 버스트!)" 합계
+  if (diceSumSpanTop) {
+    diceSumSpanTop.textContent = currentSum;
   }
 
   updateRollButtonsState();
@@ -645,6 +650,7 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
 
