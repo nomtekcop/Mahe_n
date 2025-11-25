@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <title>MAHÉ – 알 카드 레이스</title>
+    <title>JUSTITIA</title>
     <style>
       * { box-sizing: border-box; }
       body {
@@ -191,12 +191,23 @@
   gap: 10px;
   align-items: stretch;
   flex: 1; /* 가운데 보드가 세로 공간을 더 많이 차지하게 */
+  width: 100%;
 }
+
+#left-column,
+#right-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;  /* 위·중간·아래로 고르게 배치 */
+  gap: 8px;                        /* 위/아래 줄 간 텀 */
+}
+
+
       
 #left-column .board-cell,
 #right-column .board-cell {
-  flex: 0 0 auto;  /* 세로로 늘어나지 않게 */
-  min-height: 70px; /* 살짝만 기존보다 크게 */
+  flex: 1;          /* 전체 높이에 맞춰서 3등분으로 쭉 늘어나게 */
+  min-height: 60px; /* 너무 작지 않게 최소 높이만 살짝 */
 }
 
       
@@ -207,6 +218,7 @@
     justify-content: space-between;
     gap: 12px;
     height: 100%;
+    flex: 1;
   }
 
   /* 위쪽 가로줄 (5~12) */
@@ -539,7 +551,7 @@
       
 
      #my-profile-bar {
-  margin-top: auto;   /* 남는 세로 공간을 위에서 먹고, 프로필 바는 맨 아래로 */
+  margin-top: 12px;   /* 남는 세로 공간을 위에서 먹고, 프로필 바는 맨 아래로 */
   padding-top: 8px;
   display: flex;
   align-items: center;
@@ -741,7 +753,7 @@
 
               <!-- 합계 / 버스트 안내 -->
               <div id="dice-info-text">
-                합계: <span id="dice-sum">0</span> (7을 넘으면 버스트!)
+                합계: <span id="dice-sum-top">0</span> (7을 넘으면 버스트!)
               </div>
 
               <!-- 🔹 멈추고 이동 버튼(대빵 크게) -->
@@ -864,6 +876,7 @@
     <script src="client.js"></script>
   </body>
 </html>
+
 
 
 
