@@ -767,15 +767,12 @@
             <!-- 가운데: 이동 요약 / 남은 카드 -->
             <div id="summary-panel">
               <div class="summary-box">
-                <div class="summary-title">이번 합계 / 이동 칸수</div>
-                <div class="summary-main">
-                  <span id="dice-sum">0</span>
-                  <span id="move-distance">→ 0칸 이동</span>
-                </div>
-                <div class="summary-sub">
-                  말이 도착할 칸이 하이라이트 됩니다.
-                </div>
-              </div>
+  <div class="summary-title">이동</div>
+  <!-- 숫자 표현만 딱 나오도록 -->
+  <div class="summary-main" id="move-distance">
+    이동 : 0 X 0 = 0
+  </div>
+</div>
 
               <div class="summary-box">
                 <div class="summary-title">남은 알 카드</div>
@@ -880,6 +877,7 @@
     <script src="client.js"></script>
   </body>
 </html>
+
 
 
 
