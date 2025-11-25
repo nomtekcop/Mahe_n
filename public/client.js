@@ -197,6 +197,7 @@ function connectSocket(myProfile) {
     renderDice();
     renderBoard();
     updateCardInfo();
+    setMoveDistanceText(0, 0);
 
     addLog('게임 시작!');
   });
@@ -290,7 +291,7 @@ function connectSocket(myProfile) {
     renderBoard();
     updateCardInfo();
     clearMoveHighlight();
-    if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
+    setMoveDistanceText(0, 0);
   });
 
   socket.on('bonus7Ready', () => {
@@ -511,12 +512,16 @@ function clearMoveHighlight() {
   }
 }
 
+function setMoveDistanceText(sum, count) {
+  if (!moveDistanceSpan) return;
+  const distance = sum * count;
+  moveDistanceSpan.textContent = `이동 : ${sum} X ${count} = ${distance}`;
+}
+
 function updateMovePreview(playerId, busted) {
   // 하이라이트/텍스트 초기화
   clearMoveHighlight();
-  if (moveDistanceSpan) {
-    moveDistanceSpan.textContent = '→ 0칸 이동';
-  }
+  setMoveDistanceText(0, 0);
 
   // 게임 안 켜져 있거나, 주사위 없음, 버스트면 미리보기 X
   if (!gameStarted || currentDice.length === 0 || busted) {
@@ -531,9 +536,9 @@ function updateMovePreview(playerId, busted) {
 
   // 규칙: 예) 2,3 → (2+3) * 2 = 10칸
   const moveDist = currentSum * currentDice.length;
-  if (moveDistanceSpan) {
-    moveDistanceSpan.textContent = `→ ${moveDist}칸 이동`;
-  }
+
+  // 🔹 여기서 새 포맷으로 표시
+  setMoveDistanceText(currentSum, currentDice.length);
 
   let curPos = player.position ?? 0; // 0 = 뗏목
   let raw = 0;
@@ -587,7 +592,7 @@ function updateTurnUI() {
   if (!currentPlayerId) {
     turnIndicator.textContent = '대기 중…';
     clearMoveHighlight();
-    if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
+    setMoveDistanceText(0, 0);
     updateRollButtonsState();
     return;
   }
@@ -600,7 +605,7 @@ function updateTurnUI() {
   } else {
     turnIndicator.textContent = `${name}의 차례`;
     clearMoveHighlight();
-    if (moveDistanceSpan) moveDistanceSpan.textContent = '→ 0칸 이동';
+    setMoveDistanceText(0, 0);
   }
 
   updateRollButtonsState();
@@ -650,6 +655,7 @@ function renderOpponents() {
     `;
   });
 }
+
 
 
 
